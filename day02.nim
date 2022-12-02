@@ -7,10 +7,10 @@ type
         Scissors
 
 func next(a: Action): Action =
-    if a == Scissors: Rock else: Action(ord(a) + 1)
+    if a == Scissors: Rock else: succ a
 
 func prev(a: Action): Action =
-    if a == Rock: Scissors else: Action(ord(a) - 1)
+    if a == Rock: Scissors else: pred a
 
 func intoAction(s: string): Action =
     case s:
@@ -19,20 +19,20 @@ func intoAction(s: string): Action =
         of "C": Scissors
         else: raise newException(ValueError, s & " is not a valid value")
 
-func intoPlaceholder(s: string): uint8 =
+func intoPlaceholder(s: string): range[0..2] =
     case s:
         of "X": 0
         of "Y": 1
         of "Z": 2
-        else: raise newException(ValueError, s & " is not a valida value")
+        else: raise newException(ValueError, s & " is not a valid value")
 
 proc score(a, b: Action): int =
     result += ord(b)
     if a == b: result += 3
     elif b == a.next(): result += 6
 
-var 
-    counter = newCountTable[(Action, uint8)](0)
+var
+    counter = newCountTable[(Action, range[0..2])](0)
 
 while true:
     try:
@@ -50,12 +50,15 @@ for k in counter.keys:
 # Part 2
 var sum = 0
 for k in counter.keys:
-    if k[1] == 0:
-        sum += score(k[0], k[0].prev) * counter[k]
-    if k[1] == 1:
-        sum += score(k[0], k[0]) * counter[k]
-    if k[1] == 2:
-        sum += score(k[0], k[0].next) * counter[k]
+    let score = case k[1]:
+        of 0:
+            score(k[0], k[0].prev)
+        of 1:
+            score(k[0], k[0])
+        of 2:
+            score(k[0], k[0].next)
+
+    sum += score * counter[k]
 
 echo "Part 1: ", firstSum
 echo "Part 2: ", sum
