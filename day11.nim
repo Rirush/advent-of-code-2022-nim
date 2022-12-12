@@ -1,5 +1,4 @@
-# nimble install https://github.com/status-im/nim-stint
-import strutils, sequtils, algorithm, stint
+import strutils, sequtils, algorithm
 
 type
     Operation = enum Multiply, Add
